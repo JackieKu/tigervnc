@@ -31,6 +31,7 @@ std::list<TXWindow*> windows;
 Atom wmProtocols, wmDeleteWindow, wmTakeFocus;
 Atom xaTIMESTAMP, xaTARGETS, xaSELECTION_TIME, xaSELECTION_STRING;
 Atom xaCLIPBOARD;
+Atom xaUTF8_STRING;
 unsigned long TXWindow::black, TXWindow::white;
 unsigned long TXWindow::defaultFg, TXWindow::defaultBg;
 unsigned long TXWindow::lightBg, TXWindow::darkBg;
@@ -59,6 +60,7 @@ void TXWindow::init(Display* dpy, const char* defaultWindowClass_)
   xaSELECTION_TIME = XInternAtom(dpy, "SELECTION_TIME", False);
   xaSELECTION_STRING = XInternAtom(dpy, "SELECTION_STRING", False);
   xaCLIPBOARD = XInternAtom(dpy, "CLIPBOARD", False);
+  xaUTF8_STRING = XInternAtom(dpy, "UTF8_STRING", False);
   XColor cols[6];
   cols[0].red = cols[0].green = cols[0].blue = 0x0000;
   cols[1].red = cols[1].green = cols[1].blue = 0xbbbb;
@@ -457,14 +459,14 @@ void TXWindow::handleXEvent(XEvent* ev)
         if (se.target == xaTARGETS) {
           Atom targets[2];
           targets[0] = xaTIMESTAMP;
-          targets[1] = XA_STRING;
+          targets[1] = xaUTF8_STRING;
           XChangeProperty(dpy, se.requestor, se.property, XA_ATOM, 32,
                           PropModeReplace, (unsigned char*)targets, 2);
         } else if (se.target == xaTIMESTAMP) {
           rdr::U32 t = selectionOwnTime[se.selection];
           XChangeProperty(dpy, se.requestor, se.property, XA_INTEGER, 32,
                           PropModeReplace, (unsigned char*)&t, 1);
-        } else if (se.target == XA_STRING) {
+        } else if (se.target == XA_STRING || se.target == xaUTF8_STRING) {
           if (!selectionRequest(se.requestor, se.selection, se.property))
             se.property = None;
         } else {

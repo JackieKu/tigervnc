@@ -224,5 +224,6 @@ private:
 extern Atom wmProtocols, wmDeleteWindow, wmTakeFocus;
 extern Atom xaTIMESTAMP, xaTARGETS, xaSELECTION_TIME, xaSELECTION_STRING;
 extern Atom xaCLIPBOARD;
+extern Atom xaUTF8_STRING;
 
 #endif

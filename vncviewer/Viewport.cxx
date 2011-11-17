@@ -234,39 +234,23 @@ void Viewport::updateWindow()
 
 void Viewport::serverCutText(const char* str, rdr::U32 len)
 {
-  char *buffer;
-  int size, ret;
-
   clearPendingClipboard();
 
   if (!acceptClipboard)
     return;
 
-  size = fl_utf8froma(NULL, 0, str, len);
-  if (size <= 0)
-    return;
-
-  size++;
-
-  buffer = new char[size];
-
-  ret = fl_utf8froma(buffer, size, str, len);
-  assert(ret < size);
-
-  vlog.debug("Got clipboard data (%d bytes)", (int)strlen(buffer));
+  vlog.debug("Got clipboard data '%s'", str);
 
   if (!hasFocus()) {
-    pendingServerCutText = buffer;
+    pendingServerCutText = rfb::strDup(str);
     return;
   }
 
   // RFB doesn't have separate selection and clipboard concepts, so we
   // dump the data into both variants.
   if (setPrimary)
-    Fl::copy(buffer, ret, 0);
-  Fl::copy(buffer, ret, 1);
-
-  delete [] buffer;
+    Fl::copy(str, len, 0);
+  Fl::copy(str, len, 1);
 }
 
 static const char * dotcursor_xpm[] = {
@@ -552,31 +536,21 @@ int Viewport::handle(int event)
 
   switch (event) {
   case FL_PASTE:
-    buffer = new char[Fl::event_length() + 1];
-
     clearPendingClipboard();
 
-    // This is documented as to ASCII, but actually does to 8859-1
-    ret = fl_utf8toa(Fl::event_text(), Fl::event_length(), buffer,
-                     Fl::event_length() + 1);
-    assert(ret < (Fl::event_length() + 1));
-
     if (!hasFocus()) {
-      pendingClientCutText = buffer;
+      pendingClientCutText = rfb::strDup(Fl::event_text());
       return 1;
     }
 
-    vlog.debug("Sending clipboard data (%d bytes)", (int)strlen(buffer));
+    vlog.debug("Sending clipboard data: '%s'", Fl::event_text());
 
     try {
-      cc->writer()->writeClientCutText(buffer, ret);
+      cc->writer()->writeClientCutText(Fl::event_text(), Fl::event_length());
     } catch (rdr::Exception& e) {
       vlog.error("%s", e.str());
       exit_vncviewer(e.str());
     }
-
-    delete [] buffer;
-
     return 1;
 
   case FL_ENTER:
