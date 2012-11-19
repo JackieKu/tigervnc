@@ -431,6 +431,7 @@ void CConn::setColourMapEntries(int firstColour, int nColours, rdr::U16* rgbs)
 void CConn::bell()
 {
   fl_beep();
+  desktop->set_attention(true);
 }
 
 void CConn::serverCutText(const char* str, rdr::U32 len)
