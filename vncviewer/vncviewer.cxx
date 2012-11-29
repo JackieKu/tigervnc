@@ -481,6 +481,17 @@ static int mktunnel()
 
 int main(int argc, char** argv)
 {
+#ifdef _WIN32
+  // Disable IME
+  HMODULE hModule = GetModuleHandleW(L"imm32");
+  if (hModule) {
+    typedef BOOL (WINAPI * ImmDisableIMEProc)(DWORD);
+    ImmDisableIMEProc ImmDisableIME = (ImmDisableIMEProc) GetProcAddress(hModule, "ImmDisableIME");
+    if (ImmDisableIME)
+      ImmDisableIME(-1);
+  }
+#endif
+
   UserDialog dlg;
 
   argv0 = argv[0];
