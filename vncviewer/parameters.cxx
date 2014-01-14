@@ -185,7 +185,8 @@ static VoidParameter* parameterArray[] = {
   &setPrimary,
 #endif
   &menuKey,
-  &fullscreenSystemKeys
+  &fullscreenSystemKeys,
+  &passwordFile,
 };
 
 // Encoding Table
