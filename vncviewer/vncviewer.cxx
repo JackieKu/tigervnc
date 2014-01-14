@@ -563,6 +563,16 @@ int main(int argc, char** argv)
 
     if (argv[i][0] == '-') {
       if (i+1 < argc) {
+        if (!strcasecmp(argv[i] + 1, "config")) {
+          const char *serverName = loadViewerParameters(argv[i+1]);
+          if (serverName) {
+            strncpy(vncServerName, serverName, VNCSERVERNAMELEN);
+            vncServerName[VNCSERVERNAMELEN - 1] = '\0';
+          }
+          i++;
+          continue;
+        }
+
         if (Configuration::setParam(&argv[i][1], argv[i+1])) {
           i += 2;
           continue;
