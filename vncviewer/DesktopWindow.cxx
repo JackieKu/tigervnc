@@ -46,6 +46,7 @@
 
 #ifdef WIN32
 #include "win32.h"
+#include "resource.h"
 #endif
 
 #ifdef __APPLE__
@@ -69,6 +70,13 @@ DesktopWindow::DesktopWindow(int w, int h, const char *name,
     statsLastUpdates(0), statsLastPixels(0), statsLastPosition(0),
     statsGraph(NULL)
 {
+#if defined(_WIN32) && !defined(HAVE_FLTK_ICONS)
+  icon(LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON),
+                        IMAGE_ICON, GetSystemMetrics(SM_CXSMICON),
+                        GetSystemMetrics(SM_CYSMICON),
+                        LR_DEFAULTCOLOR | LR_SHARED));
+#endif
+
   Fl_Group* group;
 
   // Dummy group to prevent FLTK from moving our widgets around
