@@ -182,6 +182,7 @@ static VoidParameter* parameterArray[] = {
 #endif
   &menuKey,
   &fullscreenSystemKeys,
+  &passwordFile,
   &alertOnFatalError
 };
 
