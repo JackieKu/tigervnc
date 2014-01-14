@@ -8,7 +8,7 @@ if(POLICY CMP0022)
 endif()
 
 # Internal cmake modules
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules "/home/jackie/prog/cmake_modules")
 
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
