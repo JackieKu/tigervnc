@@ -64,6 +64,7 @@ public:
   void bell();
 
   void serverCutText(const char* str, rdr::U32 len);
+  void clientCutText(const char* str, rdr::U32 len);
 
   void framebufferUpdateStart();
   void framebufferUpdateEnd();

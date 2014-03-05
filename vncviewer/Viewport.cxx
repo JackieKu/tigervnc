@@ -546,7 +546,7 @@ int Viewport::handle(int event)
     vlog.debug("Sending clipboard data: '%s'", Fl::event_text());
 
     try {
-      cc->writer()->writeClientCutText(Fl::event_text(), Fl::event_length());
+      cc->clientCutText(Fl::event_text(), Fl::event_length());
     } catch (rdr::Exception& e) {
       vlog.error("%s", e.str());
       exit_vncviewer(e.str());
@@ -727,7 +727,7 @@ void Viewport::flushPendingClipboard()
   if (pendingClientCutText) {
     size_t len = strlen(pendingClientCutText);
     vlog.debug("Sending pending clipboard data (%d bytes)", (int)len);
-    cc->writer()->writeClientCutText(pendingClientCutText, len);
+    cc->clientCutText(pendingClientCutText, len);
   }
 
   clearPendingClipboard();

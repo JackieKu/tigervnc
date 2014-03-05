@@ -74,6 +74,26 @@ static const PixelFormat lowColourPF(8, 6, false, true,
 static const PixelFormat mediumColourPF(8, 8, false, true,
                                         7, 7, 3, 5, 2, 0);
 
+static char *lastCutText;
+static size_t lastCutTextLength;
+static size_t lastCutTextCapacity;
+static inline
+bool checkCutText(const char *text, size_t len)
+{
+  if (len == lastCutTextLength && !strncmp(text, lastCutText, len))
+    return false;
+  if (len > 0) {
+    if (len > lastCutTextCapacity) {
+      lastCutTextCapacity = ((len >> 10) + 1) << 10;
+      lastCutText = (char *) realloc(lastCutText, lastCutTextCapacity);
+    }
+    memcpy(lastCutText, text, len);
+  }
+  lastCutText[len] = 0;
+  lastCutTextLength = len;
+  return true;
+}
+
 CConn::CConn(const char* vncServerName, network::Socket* socket=NULL)
   : serverHost(0), serverPort(0), desktop(NULL),
     updateCount(0), pixelCount(0), pendingPFChange(false),
@@ -436,7 +456,16 @@ void CConn::bell()
 
 void CConn::serverCutText(const char* str, rdr::U32 len)
 {
+  if (checkCutText(str, len))
   desktop->serverCutText(str, len);
+}
+
+void CConn::clientCutText(const char* str, rdr::U32 len)
+{
+  if (checkCutText(str, len)) {
+    vlog.debug("Sending clipboard data: '%s'", Fl::event_text());
+    writer()->writeClientCutText(str, len);
+  }
 }
 
 void CConn::dataRect(const Rect& r, int encoding)
