@@ -479,6 +479,12 @@ static int mktunnel()
 }
 #endif /* !WIN32 */
 
+#ifdef _WIN32
+#define D(...) do { char s[4096]; sprintf(s, __VA_ARGS__); OutputDebugStringA(s); } while (0)
+#else
+#define D(...) do {} while (0)
+#endif
+
 int main(int argc, char** argv)
 {
 #ifdef _WIN32
@@ -541,6 +547,8 @@ int main(int argc, char** argv)
     if (alertOnFatalError)
       fl_alert("%s", e.str());
   }
+
+  D("vncviewer argc: %d", argc);
 
   for (int i = 1; i < argc;) {
     if (Configuration::setParam(argv[i])) {
