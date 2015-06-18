@@ -280,7 +280,7 @@ configure_file(config.h.in config.h)
 add_definitions(-DHAVE_CONFIG_H)
 include_directories(${CMAKE_BINARY_DIR})
 
-include(cmake/StaticBuild.cmake)
+include(cmake/StaticBuild-simple.cmake)
 
 add_subdirectory(common)
 
