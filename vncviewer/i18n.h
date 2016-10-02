@@ -23,7 +23,7 @@
 #include "gettext.h"
 
 /* Need to tell gcc that pgettext() doesn't screw up format strings */
-#ifdef __GNUC__
+#if ENABLE_NLS && defined(__GNUC__)
 static const char *
 pgettext_aux (const char *domain,
               const char *msg_ctxt_id, const char *msgid,
