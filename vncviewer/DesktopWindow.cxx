@@ -47,6 +47,7 @@
 
 #ifdef WIN32
 #include "win32.h"
+#include <dwmapi.h>
 #endif
 
 #ifdef __APPLE__
@@ -152,6 +153,23 @@ DesktopWindow::DesktopWindow(int w, int h, const char *name,
   }
 
   show();
+
+#ifdef WIN32
+  {
+    // https://github.com/mintty/mintty/blob/be9714aed07de156b07b989f62bf8b1bf676a2ba/src/winmain.c#L1595
+    const auto hwnd = fl_xid(this);
+    SetWindowTheme(hwnd, L"DarkMode_Explorer", NULL);
+    const BOOL yes = TRUE;
+    constexpr auto DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
+    constexpr auto DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+    if (DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &yes, sizeof(yes)) != S_OK)
+      DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE_OLD, &yes, sizeof(yes));
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0,
+      SWP_HIDEWINDOW|SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0,
+      SWP_SHOWWINDOW|SWP_DRAWFRAME|SWP_FRAMECHANGED|SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOSIZE|SWP_NOZORDER);
+  }
+#endif
 
   // Full screen events are not sent out for a hidden window,
   // so send a fake one here to set up things properly.
